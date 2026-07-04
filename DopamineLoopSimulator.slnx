@@ -1,4 +1,12 @@
 ﻿<Solution>
   <Project Path="Unity.XR.Interaction.Toolkit.Samples.StarterAssets.csproj" />
   <Project Path="Unity.XR.Interaction.Toolkit.Samples.StarterAssets.Editor.csproj" />
+  <Project Path="Unity.XR.Management.Tests.csproj" />
+  <Project Path="Unity.XR.Management.Tests.Standalone.csproj" />
+  <Project Path="Unity.XR.Management.Editor.csproj" />
+  <Project Path="Unity.XR.TestSupport.csproj" />
+  <Project Path="Unity.XR.Management.csproj" />
+  <Project Path="Unity.XR.Management.EditorTests.csproj" />
+  <Project Path="Unity.XR.Management.TestPackage.csproj" />
+  <Project Path="Unity.XR.Management.TestPackage.Editor.csproj" />
 </Solution>

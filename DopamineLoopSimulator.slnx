@@ -4,6 +4,7 @@
   <Project Path="Unity.XR.Management.Tests.csproj" />
   <Project Path="Unity.XR.Management.Tests.Standalone.csproj" />
   <Project Path="Unity.XR.Management.Editor.csproj" />
+  <Project Path="Assembly-CSharp.csproj" />
   <Project Path="Unity.XR.TestSupport.csproj" />
   <Project Path="Unity.XR.Management.csproj" />
   <Project Path="Unity.XR.Management.EditorTests.csproj" />

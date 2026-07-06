@@ -149,7 +149,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4397664628265918113, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.444
+      value: -0.01
       objectReference: {fileID: 0}
     - target: {fileID: 4397664628265918113, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1543,7 +1543,7 @@ Transform:
   m_GameObject: {fileID: 1353064641}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.194, y: 1.362, z: -0.366}
+  m_LocalPosition: {x: 0.007, y: 0.993, z: -0.546}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1734,7 +1734,7 @@ MonoBehaviour:
   _rigidbody: {fileID: 1816548796}
   _kinematicWhileSelected: 1
   _throwWhenUnselected: 1
-  _forceKinematicDisabled: 0
+  _forceKinematicDisabled: 1
 --- !u!65 &1816548798
 BoxCollider:
   m_ObjectHideFlags: 0

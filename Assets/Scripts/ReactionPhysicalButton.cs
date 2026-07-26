@@ -3,6 +3,7 @@ using UnityEngine;
 public class ReactionPhysicalButton : MonoBehaviour
 {
     [SerializeField] private ReactionLightController reactionLightController;
+    [SerializeField] private ButtonPressAnimation buttonPressAnimation;
 
     [Header("Sound")]
     [SerializeField] private AudioSource audioSource;
@@ -27,6 +28,11 @@ public class ReactionPhysicalButton : MonoBehaviour
             return;
 
         lastPressTime = Time.time;
+
+        if (buttonPressAnimation != null)
+        {
+            buttonPressAnimation.PlayPressAnimation();
+        }
 
         PlayButtonSound();
 

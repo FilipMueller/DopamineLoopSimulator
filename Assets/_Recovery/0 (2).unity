@@ -3523,8 +3523,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoundTimer
   roundDuration: 20
-  sceneFadeLoader: {fileID: 2101134722}
-  reactionLightController: {fileID: 1415641398}
+  sceneFadeLoader: {fileID: 0}
+  reactionLightController: {fileID: 0}
 --- !u!1 &1845918231
 GameObject:
   m_ObjectHideFlags: 0

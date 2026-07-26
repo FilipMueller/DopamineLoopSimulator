@@ -4,7 +4,11 @@ using TMPro;
 public class RoundTimer : MonoBehaviour
 {
     [Header("Timer Settings")]
-    [SerializeField] private float roundDuration = 180f; // 3 minutes
+    [SerializeField] private float roundDuration = 180f;
+
+    [Header("End Round")]
+    [SerializeField] private SceneFadeLoader sceneFadeLoader;
+    [SerializeField] private ReactionLightController reactionLightController;
 
     private TMP_Text timerText;
     private float remainingTime;
@@ -32,7 +36,21 @@ public class RoundTimer : MonoBehaviour
         {
             remainingTime = 0f;
             timerRunning = false;
+            UpdateTimerText();
+
             Debug.Log("Round timer finished.");
+
+            if (reactionLightController != null)
+            {
+                reactionLightController.SaveResults();
+            }
+
+            if (sceneFadeLoader != null)
+            {
+                sceneFadeLoader.FadeToResultScene();
+            }
+
+            return;
         }
 
         UpdateTimerText();

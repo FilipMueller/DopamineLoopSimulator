@@ -24,6 +24,8 @@ MonoBehaviour:
     m_path: Assets/Scenes/1 Start Scene.unity
   - m_enabled: 1
     m_path: Assets/Scenes/Main VR Scene.unity
+  - m_enabled: 1
+    m_path: Assets/Scenes/ResultScene.unity
   m_HasScriptingDefines: 0
   m_ScriptingDefines: []
   m_PlayerSettingsYaml:

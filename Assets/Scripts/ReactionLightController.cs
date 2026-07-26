@@ -81,6 +81,18 @@ public class ReactionLightController : MonoBehaviour
         }
     }
 
+    public void SaveResults()
+    {
+        PlayerPrefs.SetInt("Hits", hits);
+        PlayerPrefs.SetInt("LateFails", lateFails);
+        PlayerPrefs.SetInt("FalseAlarms", falseAlarms);
+        PlayerPrefs.SetInt("MissedGreens", missedGreens);
+
+        PlayerPrefs.Save();
+
+        Debug.Log("Results saved.");
+    }
+
     private void StartGreenTimer()
     {
         greenStartTime = Time.time;

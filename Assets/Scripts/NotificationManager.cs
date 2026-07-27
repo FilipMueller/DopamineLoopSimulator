@@ -19,6 +19,10 @@ public class NotificationManager : MonoBehaviour
     [Header("Screen On/Off")]
     [SerializeField] private PhoneScreenController screenController;
 
+    [Header("Audio Notification")]
+    public AudioSource audioSource;
+    public AudioClip notifSound;
+
     private readonly List<RectTransform> activeCards = new List<RectTransform>();
     private Vector2 restingPosition;
 
@@ -39,18 +43,32 @@ public class NotificationManager : MonoBehaviour
         if (phoneVibration != null)
             phoneVibration.TriggerVibration(HandSide.Both);
 
+        if (audioSource != null && notifSound != null)
+        {
+            audioSource.PlayOneShot(notifSound);
+        }
+
+        // On ne bloque plus ici : on crée toujours la nouvelle notification
         SpawnCard(data);
     }
 
     private void SpawnCard(NotificationData data)
     {
-        
-      
+        // 1. SI on a déjà atteint la limite (5), on supprime IMMÉDIATEMENT la plus ancienne (celle tout en bas)
+        // avant même de bouger les autres. Ça empêche de dépasser le bas de l'écran.
+        while (activeCards.Count >= maxVisibleNotifications)
+        {
+            int lastIndex = activeCards.Count - 1;
+            Destroy(activeCards[lastIndex].gameObject);
+            activeCards.RemoveAt(lastIndex);
+        }
+
+        // 2. Maintenant qu'il y a de la place, on décale les cartes restantes vers le bas
         Vector2 shiftDirection = Quaternion.Euler(0f, 0f, notificationTemplate.localEulerAngles.z) * Vector2.down;
         foreach (var existingCard in activeCards)
             existingCard.anchoredPosition += shiftDirection * cardSpacing;
 
-        // Clone le modèle, le place à la position "au repos"
+        // 3. On clone le modèle et on place la NOUVELLE carte tout en haut
         GameObject newCardObj = Instantiate(notificationTemplate.gameObject, notificationParent);
         newCardObj.SetActive(true);
 
@@ -60,15 +78,8 @@ public class NotificationManager : MonoBehaviour
         var card = newCardObj.GetComponent<NotificationCard>();
         if (card != null) card.Populate(data);
 
+        // On l'ajoute en première position dans notre liste
         activeCards.Insert(0, newCardRect);
-
-        // Évite d'empiler indéfiniment : détruit les plus vieilles au-delà de la limite
-        while (activeCards.Count > maxVisibleNotifications)
-        {
-            int lastIndex = activeCards.Count - 1;
-            Destroy(activeCards[lastIndex].gameObject);
-            activeCards.RemoveAt(lastIndex);
-        }
     }
 
     // --- TEST : touche N au clavier, passe à la notif de démo suivante à

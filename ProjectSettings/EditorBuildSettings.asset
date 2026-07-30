@@ -9,8 +9,11 @@ EditorBuildSettings:
     path: Assets/Scenes/1 Start Scene.unity
     guid: dbdf3274d40b14146b697ce9a9d55f5b
   - enabled: 1
-    path: Assets/Scenes/Main VR Scene.unity
+    path: Assets/Scenes/Main VR scene.unity
     guid: 0bb2f482b9337044584b51e60a856dec
+  - enabled: 1
+    path: Assets/Scenes/FocusScene.unity
+    guid: 7a3164d025b629e498dc9c496b4b2ce7
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 295cfedad58c05746bc7da035dd3407b, type: 2}

@@ -2,9 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class NBackTaskController : MonoBehaviour
 {
+    public static NBackTaskController Instance { get; private set; }
+    
     [Header("UI")]
     [SerializeField] private TMP_Text stimulusText;
     [SerializeField] private TMP_Text feedbackText;
@@ -29,13 +32,16 @@ public class NBackTaskController : MonoBehaviour
 
     private readonly List<char> stimulusHistory = new List<char>();
 
+    // Variables d'état pour les boutons et la pause
+    private bool hasTaskStarted = false; 
+    public bool isPaused = false; 
+
     private bool taskRunning = false;
     private bool currentIsTarget = false;
     private bool responseGivenThisTrial = false;
     private bool taskFinished = false;
 
     private float currentStimulusStartTime = 0f;
-
     private int currentTrialNumber = 0;
     private int targetTrials = 0;
 
@@ -48,35 +54,156 @@ public class NBackTaskController : MonoBehaviour
     private int reactionTimeCount = 0;
 
     private Coroutine taskCoroutine;
+    
+    private float sessionStartRealtime;
+    private float totalPausedDuration = 0f;
+    private float teleportPauseStart;
 
-    private void Start()
+    private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+        sessionStartRealtime = Time.realtimeSinceStartup;
+    }
+
+    private void OnEnable()  => SceneManager.sceneLoaded += HandleSceneLoaded;
+    private void OnDisable() => SceneManager.sceneLoaded -= HandleSceneLoaded;
+
+    private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        var uiRefs = FindObjectOfType<NBackUIRefs>();
+        if (uiRefs != null)
+        {
+            // 1. On connecte les textes du nouveau Canvas
+            stimulusText = uiRefs.stimulusText;
+            feedbackText = uiRefs.feedbackText;
+            trialCounterText = uiRefs.trialCounterText;
+
+            // 2. On affiche le bon bouton
+            if (uiRefs.startButton != null)
+                uiRefs.startButton.SetActive(!hasTaskStarted && !taskFinished);
+            
+            if (uiRefs.resumeButton != null)
+                uiRefs.resumeButton.SetActive(hasTaskStarted && isPaused && !taskFinished);
+
+            // --- 3. LA CORRECTION EST ICI : On rafraîchit immédiatement le visuel ---
+            if (hasTaskStarted)
+            {
+                UpdateTrialCounterText(); // Met le bon numéro d'essai (ex: Trial 15/60)
+                
+                if (feedbackText != null) 
+                    feedbackText.text = ""; // Efface les vieux messages de feedback
+
+                if (stimulusText != null)
+                {
+                    // Si on a déjà des lettres en mémoire, on remet la dernière à l'écran
+                    if (stimulusHistory.Count > 0)
+                    {
+                        stimulusText.text = stimulusHistory[stimulusHistory.Count - 1].ToString();
+                    }
+                    else
+                    {
+                        stimulusText.text = "";
+                    }
+                }
+            }
+        }
+    }
+
+    // --- GESTION DES BOUTONS DE L'UI ---
+    public void OnClickStart()
+    {
+        if (hasTaskStarted) return;
+        hasTaskStarted = true;
+        
+        var uiRefs = FindObjectOfType<NBackUIRefs>();
+        if (uiRefs != null && uiRefs.startButton != null) uiRefs.startButton.SetActive(false);
+
         StartTask();
+    }
+
+    public void OnClickResume()
+    {
+        if (!isPaused) return;
+        
+        var uiRefs = FindObjectOfType<NBackUIRefs>();
+        if (uiRefs != null && uiRefs.resumeButton != null) uiRefs.resumeButton.SetActive(false);
+
+        ResumeTask();
     }
 
     public void StartTask()
     {
-        if (taskRunning)
-            return;
+        if (taskRunning) return;
 
         taskRunning = true;
         taskFinished = false;
+        isPaused = false;
 
         if (feedbackText != null)
-        {
-            feedbackText.text = "Press when current letter matches " + nBackLevel + "-back";
-        }
+            feedbackText.text = "Appuyez quand la lettre correspond au " + nBackLevel + "-back";
 
         taskCoroutine = StartCoroutine(TaskLoop());
     }
 
+    // --- SYSTÈME DE PAUSE ---
+    public void PauseTask()
+    {
+        if (!hasTaskStarted || taskFinished || isPaused) return;
+        
+        isPaused = true;
+        teleportPauseStart = Time.realtimeSinceStartup;
+        Debug.Log("Jeu mis en pause.");
+    }
+    public void BeginTeleportPause()
+    {
+        PauseTask();
+    }
+
+    private void ResumeTask()
+    {
+        isPaused = false;
+        float pauseDuration = Time.realtimeSinceStartup - teleportPauseStart;
+        totalPausedDuration += pauseDuration;
+        
+        // Ajuste le timer de la lettre en cours pour ne pas fausser le temps de réaction
+        currentStimulusStartTime += pauseDuration; 
+        
+        Debug.Log("Reprise du jeu.");
+    }
+
+    public float GetTotalElapsedExcludingTeleport()
+        => (Time.realtimeSinceStartup - sessionStartRealtime) - totalPausedDuration;
+
+    // Coroutine personnalisée pour mettre les timers en pause
+    private IEnumerator WaitWithPause(float duration)
+    {
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            if (!isPaused)
+            {
+                elapsed += Time.deltaTime;
+            }
+            yield return null; 
+        }
+    }
+
+    // --- LOGIQUE DU N-BACK ---
     private IEnumerator TaskLoop()
     {
         for (currentTrialNumber = 1; currentTrialNumber <= totalTrialCount; currentTrialNumber++)
         {
+            yield return new WaitWhile(() => isPaused);
+
             StartNewTrial();
 
-            yield return new WaitForSeconds(stimulusVisibleDuration);
+            yield return StartCoroutine(WaitWithPause(stimulusVisibleDuration));
 
             if (stimulusText != null)
             {
@@ -87,7 +214,7 @@ public class NBackTaskController : MonoBehaviour
 
             if (remainingTime > 0f)
             {
-                yield return new WaitForSeconds(remainingTime);
+                yield return StartCoroutine(WaitWithPause(remainingTime));
             }
 
             FinishTrial();
@@ -144,7 +271,6 @@ public class NBackTaskController : MonoBehaviour
         if (canCreateTarget)
         {
             char nBackLetter = stimulusHistory[stimulusHistory.Count - nBackLevel];
-
             int safetyCounter = 0;
 
             while (randomLetter == nBackLetter && safetyCounter < 100)
@@ -165,7 +291,8 @@ public class NBackTaskController : MonoBehaviour
 
     public void RegisterPlayerResponse()
     {
-        if (!taskRunning || taskFinished)
+        // Empêche de valider une réponse si le jeu est en pause
+        if (!taskRunning || taskFinished || isPaused)
             return;
 
         if (responseGivenThisTrial)
@@ -261,7 +388,6 @@ public class NBackTaskController : MonoBehaviour
     public void SaveResults()
     {
         int totalTrials = totalTrialCount;
-
         float accuracy = 0f;
 
         if (totalTrials > 0)
@@ -288,6 +414,8 @@ public class NBackTaskController : MonoBehaviour
         PlayerPrefs.SetFloat("NBackAccuracy", accuracy);
         PlayerPrefs.SetFloat("NBackAverageReactionTime", averageReactionTime);
 
+        PlayerPrefs.SetFloat("NBackSessionDurationExcludingTeleport", GetTotalElapsedExcludingTeleport());
+
         PlayerPrefs.Save();
 
         Debug.Log("N-back results saved.");
@@ -297,5 +425,24 @@ public class NBackTaskController : MonoBehaviour
         Debug.Log("Correct Rejections: " + correctRejections);
         Debug.Log("Accuracy: " + accuracy.ToString("0.000"));
         Debug.Log("Avg RT: " + averageReactionTime.ToString("0.000"));
+    }
+    // Nouvelle fonction qui décide quoi faire quand on appuie sur "A"
+    public void HandleMainInput()
+    {
+        // 1. Si le jeu n'a pas commencé, "A" clique sur le bouton Start
+        if (!hasTaskStarted)
+        {
+            OnClickStart();
+        }
+        // 2. Si le jeu est en pause, "A" clique sur le bouton Resume
+        else if (isPaused)
+        {
+            OnClickResume();
+        }
+        // 3. Sinon (le jeu tourne normalement), "A" sert à jouer au N-Back
+        else
+        {
+            RegisterPlayerResponse();
+        }
     }
 }

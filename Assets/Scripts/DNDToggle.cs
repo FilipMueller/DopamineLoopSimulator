@@ -41,10 +41,14 @@ public class DNDToggle : MonoBehaviour
     }
 
     public void ToggleDNDMode()
-    {
-        string current = SceneManager.GetActiveScene().name;
-        string target = (current == bureauSceneName) ? focusSceneName : bureauSceneName;
-        Debug.Log($"Scene actuelle: '{current}' | Cible: '{target}' | bureauSceneName='{bureauSceneName}' | focusSceneName='{focusSceneName}'");
-        SceneManager.LoadScene(target);
-    }
+{
+    string current = SceneManager.GetActiveScene().name;
+    string target = (current == bureauSceneName) ? focusSceneName : bureauSceneName;
+    Debug.Log($"Scene actuelle: '{current}' | Cible: '{target}' | bureauSceneName='{bureauSceneName}' | focusSceneName='{focusSceneName}'");
+
+    if (NBackTaskController.Instance != null)
+        NBackTaskController.Instance.BeginTeleportPause();
+
+    SceneManager.LoadScene(target);
+}
 }

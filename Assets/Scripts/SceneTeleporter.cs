@@ -3,8 +3,11 @@ using UnityEngine.SceneManagement;
 
 public class SceneTeleporter : MonoBehaviour
 {
-    public void TeleportToFocusRoom()
+     public void TeleportToFocusRoom()
     {
+        if (NBackTaskController.Instance != null)
+            NBackTaskController.Instance.BeginTeleportPause();
+
         SceneManager.LoadScene("Focus Scene");
     }
 }

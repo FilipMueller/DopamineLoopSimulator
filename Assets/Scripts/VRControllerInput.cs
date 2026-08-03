@@ -30,8 +30,14 @@ public class VRControllerInput : MonoBehaviour
 
         if (cancelPressed)
         {
-            Debug.Log("Cancel pressed");
+            Debug.Log("Cancel pressed (Tentative de passage aux résultats)");
             onCancelPressed.Invoke();
+
+            // Le bouton Cancel sert exclusivement à quitter la fin du N-Back
+            if (NBackTaskController.Instance != null)
+            {
+                NBackTaskController.Instance.HandleResultSceneTransitionInput();
+            }
         }
     }
 }

@@ -49,10 +49,9 @@ MonoBehaviour:
   trialCounterText: {fileID: 0}
   nBackLevel: 2
   possibleLetters: ABCDEFGHIJKLMNOPQRST
-  totalTrialCount: 20
-  trialDuration: 4
+  totalTrialCount: 10
+  trialDuration: 2
   stimulusVisibleDuration: 2
   targetProbability: 0.35
-  sceneFadeLoader: {fileID: 0}
-  endDelay: 1
+  resultSceneName: ResultScene
   isPaused: 0

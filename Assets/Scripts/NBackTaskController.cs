@@ -27,8 +27,7 @@ public class NBackTaskController : MonoBehaviour
     [SerializeField] private float targetProbability = 0.3f;
 
     [Header("Scene Transition")]
-    [SerializeField] private SceneFadeLoader sceneFadeLoader;
-    [SerializeField] private float endDelay = 1.0f;
+    [SerializeField] private string resultSceneName = "ResultScene";
 
     private readonly List<char> stimulusHistory = new List<char>();
 
@@ -359,22 +358,19 @@ public class NBackTaskController : MonoBehaviour
         }
 
         Debug.Log("N-back task finished.");
-
-        StartCoroutine(TransitionToResultScene());
+        // Pas de transition automatique : on attend l'appui sur la gâchette
+        // (cf. HandleResultSceneTransitionInput), même principe que le bouton B
+        // pour la transition scène 1 / scène 2.
     }
 
-    private IEnumerator TransitionToResultScene()
+    // À appeler depuis là où la gâchette est déjà lue. C'est la SEULE façon de
+    // rejoindre la Result Scene : ne fait rien tant que la tâche n'est pas
+    // terminée, pour éviter de sauter vers des résultats qui n'existent pas encore.
+    public void HandleResultSceneTransitionInput()
     {
-        yield return new WaitForSeconds(endDelay);
+        if (!taskFinished) return;
 
-        if (sceneFadeLoader != null)
-        {
-            sceneFadeLoader.FadeToResultScene();
-        }
-        else
-        {
-            Debug.LogWarning("SceneFadeLoader is not assigned.");
-        }
+        SceneManager.LoadScene(resultSceneName);
     }
 
     private void UpdateTrialCounterText()
@@ -402,6 +398,13 @@ public class NBackTaskController : MonoBehaviour
             averageReactionTime = totalReactionTime / reactionTimeCount;
         }
 
+        // nonTargetTrials = essais où la lettre n'était PAS une cible
+        int nonTargetTrials = totalTrials - targetTrials;
+
+        float hitRate = targetTrials > 0 ? (float)hits / targetTrials : 0f;
+        float falseAlarmRate = nonTargetTrials > 0 ? (float)falseAlarms / nonTargetTrials : 0f;
+        float dPrime = ComputeDPrime(targetTrials, nonTargetTrials, hits, falseAlarms);
+
         PlayerPrefs.SetInt("NBackLevel", nBackLevel);
         PlayerPrefs.SetInt("NBackTotalTrials", totalTrials);
         PlayerPrefs.SetInt("NBackTargetTrials", targetTrials);
@@ -414,6 +417,10 @@ public class NBackTaskController : MonoBehaviour
         PlayerPrefs.SetFloat("NBackAccuracy", accuracy);
         PlayerPrefs.SetFloat("NBackAverageReactionTime", averageReactionTime);
 
+        PlayerPrefs.SetFloat("NBackHitRate", hitRate);
+        PlayerPrefs.SetFloat("NBackFalseAlarmRate", falseAlarmRate);
+        PlayerPrefs.SetFloat("NBackDPrime", dPrime);
+
         PlayerPrefs.SetFloat("NBackSessionDurationExcludingTeleport", GetTotalElapsedExcludingTeleport());
 
         PlayerPrefs.Save();
@@ -425,7 +432,61 @@ public class NBackTaskController : MonoBehaviour
         Debug.Log("Correct Rejections: " + correctRejections);
         Debug.Log("Accuracy: " + accuracy.ToString("0.000"));
         Debug.Log("Avg RT: " + averageReactionTime.ToString("0.000"));
+        Debug.Log("d': " + dPrime.ToString("0.000"));
     }
+
+    // --- STATISTIQUES DE DÉTECTION DU SIGNAL (d') ---
+    // d' mesure la capacité à distinguer les cibles du bruit, indépendamment du biais de réponse
+    // (contrairement à la précision brute, qui peut être gonflée par un participant qui répond souvent "au cas où").
+    // Correction log-linéaire (Hautus, 1995) pour éviter les valeurs infinies quand hitRate = 1 ou falseAlarmRate = 0.
+    private float ComputeDPrime(int targetTrialCount, int nonTargetTrialCount, int hitCount, int falseAlarmCount)
+    {
+        float adjustedHitRate = (hitCount + 0.5f) / (targetTrialCount + 1f);
+        float adjustedFalseAlarmRate = (falseAlarmCount + 0.5f) / (nonTargetTrialCount + 1f);
+
+        return NormSInv(adjustedHitRate) - NormSInv(adjustedFalseAlarmRate);
+    }
+
+    // Approximation de l'inverse de la fonction de répartition normale (probit),
+    // algorithme d'Acklam. Précision largement suffisante pour un usage comportemental.
+    private float NormSInv(float p)
+    {
+        if (p <= 0f) p = 0.0001f;
+        if (p >= 1f) p = 0.9999f;
+
+        double[] a = { -3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02, 1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00 };
+        double[] b = { -5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02, 6.680131188771972e+01, -1.328068155288572e+01 };
+        double[] c = { -7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00, -2.549732539343734e+00, 4.374664141464968e+00, 2.938163982698783e+00 };
+        double[] d = { 7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00, 3.754408661907416e+00 };
+
+        double pLow = 0.02425;
+        double pHigh = 1 - pLow;
+        double q, r, result;
+        double pd = p;
+
+        if (pd < pLow)
+        {
+            q = System.Math.Sqrt(-2 * System.Math.Log(pd));
+            result = (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) /
+                     ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+        }
+        else if (pd <= pHigh)
+        {
+            q = pd - 0.5;
+            r = q * q;
+            result = (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q /
+                     (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+        }
+        else
+        {
+            q = System.Math.Sqrt(-2 * System.Math.Log(1 - pd));
+            result = -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) /
+                      ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+        }
+
+        return (float)result;
+    }
+
     // Nouvelle fonction qui décide quoi faire quand on appuie sur "A"
     public void HandleMainInput()
     {

@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
+// Plus besoin de UnityEngine.InputSystem ici !
 
 public class OfficePhoneTrigger : MonoBehaviour
 {
@@ -7,20 +7,33 @@ public class OfficePhoneTrigger : MonoBehaviour
     public AudioSource ringtoneAudio;
     public GameObject screenCanvas;
     [SerializeField] private PhoneVibration phoneVibration;
+    
     private bool isRinging = false;
     private float ringStartTime;
 
-   void Start()
-{
-    if (screenCanvas != null)
+    void Start()
     {
-        screenCanvas.SetActive(false);
+        if (screenCanvas != null)
+        {
+            screenCanvas.SetActive(false);
+        }
     }
-}
 
-void Update()
-{
-    if (Keyboard.current.pKey.wasPressedThisFrame)
+    void Update()
+    {
+        // L'Update ne sert plus qu'à vérifier si on doit ARRÊTER la sonnerie
+        if (isRinging && Time.time - ringStartTime >= ringtoneAudio.clip.length)
+        {
+            ringtoneAudio.Stop(); 
+            if (screenCanvas != null) screenCanvas.SetActive(false);
+            isRinging = false;
+        }
+    }
+
+    /// <summary>
+    /// Fonction publique appelée par le DistractionInputManager
+    /// </summary>
+    public void RingPhone()
     {
         if (screenCanvas != null)
         {
@@ -33,13 +46,10 @@ void Update()
             ringStartTime = Time.time;
             isRinging = true;
         }
-        if (phoneVibration != null) phoneVibration.TriggerVibration(HandSide.None);}
-    if (isRinging && Time.time - ringStartTime >= ringtoneAudio.clip.length)
-    {
-        ringtoneAudio.Stop(); // coupe le son aussi, au cas où Loop soit coché
-        screenCanvas.SetActive(false);
-        isRinging = false;
+        
+        if (phoneVibration != null) 
+        {
+            phoneVibration.TriggerVibration(HandSide.None);
+        }
     }
-    
-}
 }

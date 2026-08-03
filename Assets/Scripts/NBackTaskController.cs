@@ -369,6 +369,10 @@ public class NBackTaskController : MonoBehaviour
     public void HandleResultSceneTransitionInput()
     {
         if (!taskFinished) return;
+        if (DistractionInputManager.Instance != null)
+        {
+            DistractionInputManager.Instance.LogResultsTransitionAndStopLogging();
+        }
 
         SceneManager.LoadScene(resultSceneName);
     }

@@ -3,18 +3,18 @@ using System.IO;
 using UnityEngine;
 
 /// <summary>
-/// Logger minimal d'événements de session.
-/// Enregistre :
-/// - Début/fin de session
-/// - Evénements personnalisés
-/// - Mouvements de tête pendant les distractions
+/// Minimal session event logger.
+/// Records:
+/// - Session start/end
+/// - Custom events
+/// - Head movements during distractions
 /// </summary>
 public class SessionLogger : MonoBehaviour
 {
     public static SessionLogger Instance { get; private set; }
 
     [Header("Session")]
-    [Tooltip("Ex : WithDistraction ou NoDistraction")]
+    [Tooltip("Ex: WithDistraction or NoDistraction")]
     public string sessionCondition = "";
 
     [Header("Head Tracking")]
@@ -78,11 +78,12 @@ public class SessionLogger : MonoBehaviour
 
         LogEvent("SessionStart", sessionCondition);
 
-        Debug.Log("[SessionLogger] Logging vers : " + filePath);
+        Debug.Log("[SessionLogger] Logging to: " + filePath);
+        StartHeadTracking();
     }
 
     /// <summary>
-    /// Enregistre un évènement.
+    /// Logs an event.
     /// </summary>
     public void LogEvent(string eventType, string details = "")
     {
@@ -99,13 +100,13 @@ public class SessionLogger : MonoBehaviour
     }
 
     /// <summary>
-    /// Commence à enregistrer les mouvements de tête.
+    /// Starts recording head movements.
     /// </summary>
     public void StartHeadTracking()
     {
         if (headTransform == null)
         {
-            Debug.LogWarning("SessionLogger : Head Transform non assigné.");
+            Debug.LogWarning("SessionLogger: Head Transform not assigned.");
             return;
         }
 
@@ -116,7 +117,7 @@ public class SessionLogger : MonoBehaviour
     }
 
     /// <summary>
-    /// Arrête l'enregistrement des mouvements de tête.
+    /// Stops recording head movements.
     /// </summary>
     public void StopHeadTracking()
     {

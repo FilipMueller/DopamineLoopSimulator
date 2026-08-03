@@ -97,7 +97,7 @@ public class NotificationManager : MonoBehaviour
         }
     }
 
-    private void TestNextNotification()
+    public void TestNextNotification()
     {
         if (testNotifications == null || testNotifications.Count == 0)
         {
@@ -123,5 +123,5 @@ public class NotificationManager : MonoBehaviour
     }
 
     [ContextMenu("Test Next Notification")]
-    private void TestNextNotificationContextMenu() => TestNextNotification();
+    public void TestNextNotificationContextMenu() => TestNextNotification();
 }

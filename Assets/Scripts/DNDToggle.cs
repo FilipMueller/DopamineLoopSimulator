@@ -49,6 +49,11 @@ public class DNDToggle : MonoBehaviour
     if (NBackTaskController.Instance != null)
         NBackTaskController.Instance.BeginTeleportPause();
 
+    if (DistractionInputManager.Instance != null)
+        {
+            DistractionInputManager.Instance.LogSceneToggle($"Transition vers : {target}");
+        }
+
     SceneManager.LoadScene(target);
 }
 }

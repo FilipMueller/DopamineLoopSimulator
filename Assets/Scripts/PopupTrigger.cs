@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
+// On retire UnityEngine.InputSystem car on n'en a plus besoin ici
 
 public class PopupTrigger : MonoBehaviour
 {
@@ -14,20 +14,19 @@ public class PopupTrigger : MonoBehaviour
         }
     }
 
-    private void Update()
+    /// <summary>
+    /// Fonction publique appelée par le DistractionInputManager
+    /// </summary>
+    public void ShowPopup()
     {
-        // On teste avec la touche L pour voir si ça évite les conflits
-        if (Keyboard.current.lKey.wasPressedThisFrame)
+        if (popup != null)
         {
-            if (popup != null)
-            {
-                popup.SetActive(true);
-                Debug.Log("Touche L pressée : Le pop-up s'affiche !");
-            }
-            else
-            {
-                Debug.LogWarning("Attention : Le champ Popup est vide dans l'inspecteur !");
-            }
+            popup.SetActive(true);
+            Debug.Log("Le pop-up s'affiche via le Manager !");
+        }
+        else
+        {
+            Debug.LogWarning("Attention : Le champ Popup est vide dans l'inspecteur !");
         }
     }
 }

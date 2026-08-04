@@ -5,6 +5,7 @@ public class VRStartMenu : MonoBehaviour
 {
     [Header("Scene")]
     [SerializeField] private string gameplaySceneName = "Main VR Scene";
+    [SerializeField] private string focusScene = "FocusScene";
 
     public void StartWithDistractions()
     {
@@ -19,6 +20,6 @@ public class VRStartMenu : MonoBehaviour
         PlayerPrefs.SetInt("DistractionsEnabled", 0);
         PlayerPrefs.Save();
 
-        SceneManager.LoadScene(gameplaySceneName);
+        SceneManager.LoadScene(focusScene);
     }
 }

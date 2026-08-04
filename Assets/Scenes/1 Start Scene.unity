@@ -2460,7 +2460,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hand: {fileID: 783794897}
-  _hmd: {fileID: 0}
+  _pinchGrabAPI: {fileID: 0}
+  _palmGrabAPI: {fileID: 0}
 --- !u!4 &56326181
 Transform:
   m_ObjectHideFlags: 0
@@ -8855,7 +8856,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hand: {fileID: 470833820}
-  _hmd: {fileID: 470833821}
+  _pinchGrabAPI: {fileID: 0}
+  _palmGrabAPI: {fileID: 0}
 --- !u!114 &190584139
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9164,7 +9166,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hand: {fileID: 1943719774}
-  _hmd: {fileID: 0}
+  _pinchGrabAPI: {fileID: 0}
+  _palmGrabAPI: {fileID: 0}
 --- !u!4 &195291063
 Transform:
   m_ObjectHideFlags: 0
@@ -12258,7 +12261,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Play with distracitions
+  m_text: Distraction Mode
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5b036e831c0c90547b32a8a896d80f79, type: 2}
   m_sharedMaterial: {fileID: 2427308795250815149, guid: 5b036e831c0c90547b32a8a896d80f79, type: 2}
@@ -23185,7 +23188,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Play without distractions
+  m_text: Focus Mode
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5b036e831c0c90547b32a8a896d80f79, type: 2}
   m_sharedMaterial: {fileID: 2427308795250815149, guid: 5b036e831c0c90547b32a8a896d80f79, type: 2}
@@ -39323,7 +39326,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hand: {fileID: 4388538}
-  _hmd: {fileID: 0}
+  _pinchGrabAPI: {fileID: 0}
+  _palmGrabAPI: {fileID: 0}
 --- !u!114 &944678676
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45601,7 +45605,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hand: {fileID: 170251128}
-  _hmd: {fileID: 170251129}
+  _pinchGrabAPI: {fileID: 0}
+  _palmGrabAPI: {fileID: 0}
 --- !u!4 &1102832224
 Transform:
   m_ObjectHideFlags: 0
@@ -46738,6 +46743,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hand: {fileID: 1131235103}
+  _grabAPI: {fileID: 0}
 --- !u!114 &1131235103
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -51079,6 +51085,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameplaySceneName: Main VR Scene
+  focusScene: FocusScene
 --- !u!114 &1212402848
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60872,7 +60879,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hand: {fileID: 1169144364}
-  _hmd: {fileID: 0}
+  _pinchGrabAPI: {fileID: 0}
+  _palmGrabAPI: {fileID: 0}
 --- !u!114 &1457688995
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -81075,7 +81083,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hand: {fileID: 1174482031}
-  _hmd: {fileID: 1174482032}
+  _pinchGrabAPI: {fileID: 0}
+  _palmGrabAPI: {fileID: 0}
 --- !u!114 &1955578212
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -83307,6 +83316,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2019658864}
   - component: {fileID: 2019658865}
+  - component: {fileID: 2019658866}
   m_Layer: 0
   m_Name: RightEyeAnchor
   m_TagString: Untagged
@@ -83380,6 +83390,50 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &2019658866
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2019658863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_AllowHDROutput: 1
+  m_UseScreenCoordOverride: 0
+  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_TaaSettings:
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
 --- !u!1 &2021985396
 GameObject:
   m_ObjectHideFlags: 0
@@ -84697,7 +84751,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hand: {fileID: 1907855242}
-  _hmd: {fileID: 1907855243}
+  _pinchGrabAPI: {fileID: 0}
+  _palmGrabAPI: {fileID: 0}
 --- !u!4 &2046785666
 Transform:
   m_ObjectHideFlags: 0
@@ -85275,6 +85330,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hand: {fileID: 2056990702}
+  _grabAPI: {fileID: 0}
 --- !u!114 &2056990702
 MonoBehaviour:
   m_ObjectHideFlags: 0

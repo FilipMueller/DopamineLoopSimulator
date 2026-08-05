@@ -658,6 +658,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &246415363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 246415360}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e27526ca12875ab43ae843eb49e6eabf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PopupTrigger
+  popup: {fileID: 246415360}
 --- !u!1001 &254700277
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1289,6 +1302,135 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!1 &444340450
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 444340453}
+  - component: {fileID: 444340452}
+  - component: {fileID: 444340451}
+  m_Layer: 0
+  m_Name: SessionManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &444340451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 444340450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e441c9c03848794e988ecdad1c82994, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SessionLogger
+  sessionCondition: Test2
+  headTransform: {fileID: 1353064646}
+  headLogFrequency: 10
+--- !u!114 &444340452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 444340450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53e2a1bcf55bdd6479e937fd951a87dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DistractionInputManager
+  distractions:
+  - key: 28
+    eventLabel: PhoneNotifications
+    onTrigger:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1085835197}
+          m_TargetAssemblyTypeName: NotificationManager, Assembly-CSharp
+          m_MethodName: TestNextNotification
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - key: 26
+    eventLabel: MailPopup
+    onTrigger:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 246415363}
+          m_TargetAssemblyTypeName: PopupTrigger, Assembly-CSharp
+          m_MethodName: ShowPopup
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - key: 30
+    eventLabel: PhoneRinging
+    onTrigger:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 254700281}
+          m_TargetAssemblyTypeName: OfficePhoneTrigger, Assembly-CSharp
+          m_MethodName: RingPhone
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - key: 22
+    eventLabel: CarHonk
+    onTrigger:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1991103445}
+          m_TargetAssemblyTypeName: CarHonk, Assembly-CSharp
+          m_MethodName: PlayHonk
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+--- !u!4 &444340453
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 444340450}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.24278, y: 1.18494, z: -0.4804}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &474388651 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 565953ce171382e47846839991f5a76a, type: 3}
@@ -2063,7 +2205,7 @@ PrefabInstance:
       objectReference: {fileID: 165124842}
     - target: {fileID: 750122184747212446, guid: 1ae8dad83e850354ebfa828656c86e73, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.288
+      value: 0.134
       objectReference: {fileID: 0}
     - target: {fileID: 750122184747212446, guid: 1ae8dad83e850354ebfa828656c86e73, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2071,7 +2213,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 750122184747212446, guid: 1ae8dad83e850354ebfa828656c86e73, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.269
+      value: 0.022
       objectReference: {fileID: 0}
     - target: {fileID: 750122184747212446, guid: 1ae8dad83e850354ebfa828656c86e73, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2118,6 +2260,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 750122184747212446, guid: 1ae8dad83e850354ebfa828656c86e73, type: 3}
   m_PrefabInstance: {fileID: 1085835195}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1085835197 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 342369730913518303, guid: 1ae8dad83e850354ebfa828656c86e73, type: 3}
+  m_PrefabInstance: {fileID: 1085835195}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 165124834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d6c382936c551f4793460f0a063000f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NotificationManager
 --- !u!1001 &1115222293
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4915,17 +5068,6 @@ Transform:
   - {fileID: 1974888376}
   m_Father: {fileID: 354070080}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2101134722 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6264724075056415369, guid: 88a50f55d47d79b468b24ae712fdc47d, type: 3}
-  m_PrefabInstance: {fileID: 787262165839792034}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0892feecbc96fad459b0e7a2acddc408, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SceneFadeLoader
 --- !u!1 &2113056046
 GameObject:
   m_ObjectHideFlags: 0
@@ -5100,10 +5242,6 @@ PrefabInstance:
       propertyPath: stimulusText
       value: 
       objectReference: {fileID: 504921379}
-    - target: {fileID: 9089821158804361460, guid: 3d6d87f8b6a22014cadd294ebbc5c5d9, type: 3}
-      propertyPath: sceneFadeLoader
-      value: 
-      objectReference: {fileID: 2101134722}
     - target: {fileID: 9089821158804361460, guid: 3d6d87f8b6a22014cadd294ebbc5c5d9, type: 3}
       propertyPath: trialCounterText
       value: 
@@ -6351,6 +6489,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6320013778931701883, guid: b779909e678025b4290a215fc93d8336, type: 3}
       insertIndex: -1
       addedObject: {fileID: 246415361}
+    - targetCorrespondingSourceObject: {fileID: 6320013778931701883, guid: b779909e678025b4290a215fc93d8336, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 246415363}
   m_SourcePrefab: {fileID: 100100000, guid: b779909e678025b4290a215fc93d8336, type: 3}
 --- !u!4 &6815332090645179164
 Transform:
@@ -6981,3 +7122,4 @@ SceneRoots:
   - {fileID: 254700277}
   - {fileID: 1673206370}
   - {fileID: 2859214192808851975}
+  - {fileID: 444340453}

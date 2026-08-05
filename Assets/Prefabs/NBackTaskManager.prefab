@@ -47,9 +47,9 @@ MonoBehaviour:
   stimulusText: {fileID: 0}
   feedbackText: {fileID: 0}
   trialCounterText: {fileID: 0}
-  nBackLevel: 2
+  nBackLevel: 3
   possibleLetters: ABCDEFGHIJKLMNOPQRST
-  totalTrialCount: 10
+  totalTrialCount: 40
   trialDuration: 2
   stimulusVisibleDuration: 2
   targetProbability: 0.35

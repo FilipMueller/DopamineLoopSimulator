@@ -12,6 +12,7 @@ public class NBackTaskController : MonoBehaviour
     [SerializeField] private TMP_Text stimulusText;
     [SerializeField] private TMP_Text feedbackText;
     [SerializeField] private TMP_Text trialCounterText;
+    [SerializeField] private TMP_Text nBackTitleText;
 
     [Header("N-Back Settings")]
     [SerializeField] private int nBackLevel = 2;
@@ -144,6 +145,8 @@ public class NBackTaskController : MonoBehaviour
         taskFinished = false;
         isPaused = false;
 
+        UpdateNBackTitleText();
+
         if (feedbackText != null)
             feedbackText.text = "Appuyez quand la lettre correspond au " + nBackLevel + "-back";
 
@@ -174,6 +177,14 @@ public class NBackTaskController : MonoBehaviour
         currentStimulusStartTime += pauseDuration; 
         
         Debug.Log("Reprise du jeu.");
+    }
+
+    private void UpdateNBackTitleText()
+    {
+        if (nBackTitleText != null)
+        {
+            nBackTitleText.text = nBackLevel + "-Back Test";
+        }
     }
 
     public float GetTotalElapsedExcludingTeleport()

@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -20,6 +22,8 @@ public class NBackTaskController : MonoBehaviour
 
     [Header("Trial Settings")]
     [SerializeField] private int totalTrialCount = 60;
+    [SerializeField] private bool enableTutorial = true;
+    [SerializeField] private int tutorialTrialCount = 10;
     [SerializeField] private float trialDuration = 2.5f;
     [SerializeField] private float stimulusVisibleDuration = 1.0f;
 
@@ -58,6 +62,16 @@ public class NBackTaskController : MonoBehaviour
     private float sessionStartRealtime;
     private float totalPausedDuration = 0f;
     private float teleportPauseStart;
+
+    private enum TaskPhase
+    {
+        Tutorial,
+        TutorialFinished,
+        Experiment,
+        Finished
+    }
+
+    private TaskPhase currentPhase;
 
     private void Awake()
     {
@@ -119,12 +133,53 @@ public class NBackTaskController : MonoBehaviour
     public void OnClickStart()
     {
         if (hasTaskStarted) return;
-        hasTaskStarted = true;
-        
-        var uiRefs = FindObjectOfType<NBackUIRefs>();
-        if (uiRefs != null && uiRefs.startButton != null) uiRefs.startButton.SetActive(false);
 
-        StartTask();
+        hasTaskStarted = true;
+
+        var uiRefs = FindObjectOfType<NBackUIRefs>();
+        if (uiRefs != null && uiRefs.startButton != null)
+            uiRefs.startButton.SetActive(false);
+
+        if (enableTutorial)
+        {
+            currentPhase = TaskPhase.Tutorial;
+
+            ShowTutorialInstructions();
+        }
+        else
+        {
+            currentPhase = TaskPhase.Experiment;
+
+            StartTask();
+        }
+    }
+
+    private void ShowTutorialInstructions()
+    {
+        taskRunning = false;
+        taskFinished = false;
+
+        if (stimulusText != null)
+        {
+            stimulusText.text = "";
+        }
+
+        if (trialCounterText != null)
+        {
+            trialCounterText.text = "";
+        }
+
+        if (feedbackText != null)
+        {
+            feedbackText.text =
+                "Tutorial\n\n" +
+                "Press A when the current letter matches\n" +
+                "the letter shown " + nBackLevel + " positions ago.\n\n" +
+                "You will receive feedback during the tutorial.\n\n" +
+                "Press A to start.";
+        }
+
+        Debug.Log("Tutorial instructions displayed.");
     }
 
     public void OnClickResume()
@@ -207,13 +262,26 @@ public class NBackTaskController : MonoBehaviour
     // --- LOGIQUE DU N-BACK ---
     private IEnumerator TaskLoop()
     {
-        for (currentTrialNumber = 1; currentTrialNumber <= totalTrialCount; currentTrialNumber++)
+        int numberOfTrials;
+
+        if (currentPhase == TaskPhase.Tutorial)
+        {
+            numberOfTrials = tutorialTrialCount;
+        }
+        else
+        {
+            numberOfTrials = totalTrialCount;
+        }
+
+        for (currentTrialNumber = 1; currentTrialNumber <= numberOfTrials; currentTrialNumber++)
         {
             yield return new WaitWhile(() => isPaused);
 
             StartNewTrial();
 
-            yield return StartCoroutine(WaitWithPause(stimulusVisibleDuration));
+            yield return StartCoroutine(
+                WaitWithPause(stimulusVisibleDuration)
+            );
 
             if (stimulusText != null)
             {
@@ -224,7 +292,9 @@ public class NBackTaskController : MonoBehaviour
 
             if (remainingTime > 0f)
             {
-                yield return StartCoroutine(WaitWithPause(remainingTime));
+                yield return StartCoroutine(
+                    WaitWithPause(remainingTime)
+                );
             }
 
             FinishTrial();
@@ -266,7 +336,7 @@ public class NBackTaskController : MonoBehaviour
     private char GenerateNextLetter()
     {
         bool canCreateTarget = stimulusHistory.Count >= nBackLevel;
-        bool shouldCreateTarget = canCreateTarget && Random.value < targetProbability;
+        bool shouldCreateTarget = canCreateTarget && UnityEngine.Random.value < targetProbability;
 
         if (shouldCreateTarget)
         {
@@ -295,7 +365,7 @@ public class NBackTaskController : MonoBehaviour
 
     private char GetRandomLetter()
     {
-        int randomIndex = Random.Range(0, possibleLetters.Length);
+        int randomIndex = UnityEngine.Random.Range(0, possibleLetters.Length);
         return possibleLetters[randomIndex];
     }
 
@@ -320,7 +390,10 @@ public class NBackTaskController : MonoBehaviour
 
             if (feedbackText != null)
             {
-                feedbackText.text = "Correct";
+                if (currentPhase == TaskPhase.Tutorial)
+                {
+                    feedbackText.text = "Correct";
+                }
             }
 
             Debug.Log("HIT. RT: " + reactionTime.ToString("0.000") + " s");
@@ -331,7 +404,10 @@ public class NBackTaskController : MonoBehaviour
 
             if (feedbackText != null)
             {
-                feedbackText.text = "False alarm";
+                if (currentPhase == TaskPhase.Tutorial)
+                {
+                    feedbackText.text = "False alarm";
+                }
             }
 
             Debug.Log("FALSE ALARM");
@@ -353,6 +429,26 @@ public class NBackTaskController : MonoBehaviour
 
     private void FinishTask()
     {
+        if (currentPhase == TaskPhase.Tutorial)
+        {
+            taskRunning = false;
+            taskFinished = false;
+
+            currentPhase = TaskPhase.TutorialFinished;
+
+            stimulusText.text = "";
+
+            if (feedbackText != null)
+            {
+                feedbackText.text =
+                    "Tutorial complete!\n\nPress A to begin the experiment.";
+            }
+
+            return;
+        }
+
+        // ===== Experiment finished =====
+
         taskRunning = false;
         taskFinished = true;
 
@@ -369,9 +465,8 @@ public class NBackTaskController : MonoBehaviour
         }
 
         Debug.Log("N-back task finished.");
-        // Pas de transition automatique : on attend l'appui sur la gâchette
-        // (cf. HandleResultSceneTransitionInput), même principe que le bouton B
-        // pour la transition scène 1 / scène 2.
+
+        // Wait for trigger to transition to result scene
     }
 
     // À appeler depuis là où la gâchette est déjà lue. C'est la SEULE façon de
@@ -392,7 +487,13 @@ public class NBackTaskController : MonoBehaviour
     {
         if (trialCounterText != null)
         {
-            trialCounterText.text = "Trial " + currentTrialNumber + " / " + totalTrialCount;
+            int totalTrials =
+                currentPhase == TaskPhase.Tutorial
+                    ? tutorialTrialCount
+                    : totalTrialCount;
+
+            trialCounterText.text =
+                "Trial " + currentTrialNumber + " / " + totalTrials;
         }
     }
 
@@ -448,6 +549,9 @@ public class NBackTaskController : MonoBehaviour
         Debug.Log("Accuracy: " + accuracy.ToString("0.000"));
         Debug.Log("Avg RT: " + averageReactionTime.ToString("0.000"));
         Debug.Log("d': " + dPrime.ToString("0.000"));
+
+        SaveResultsToJson();
+        Debug.Log("N-back results saved.");
     }
 
     // --- STATISTIQUES DE DÉTECTION DU SIGNAL (d') ---
@@ -505,20 +609,172 @@ public class NBackTaskController : MonoBehaviour
     // Nouvelle fonction qui décide quoi faire quand on appuie sur "A"
     public void HandleMainInput()
     {
-        // 1. Si le jeu n'a pas commencé, "A" clique sur le bouton Start
+        // 1. Start screen -> show tutorial or start experiment
         if (!hasTaskStarted)
         {
             OnClickStart();
+            return;
         }
-        // 2. Si le jeu est en pause, "A" clique sur le bouton Resume
-        else if (isPaused)
+
+        // 2. Tutorial instructions -> start tutorial
+        if (currentPhase == TaskPhase.Tutorial && !taskRunning)
+        {
+            StartTutorial();
+            return;
+        }
+
+        // 3. Tutorial finished -> start experiment
+        if (currentPhase == TaskPhase.TutorialFinished)
+        {
+            StartExperiment();
+            return;
+        }
+
+        // 4. Game paused -> resume
+        if (isPaused)
         {
             OnClickResume();
+            return;
         }
-        // 3. Sinon (le jeu tourne normalement), "A" sert à jouer au N-Back
-        else
+
+        // 5. Task is running -> register N-back response
+        if (taskRunning)
         {
             RegisterPlayerResponse();
         }
     }
+
+    private void ResetStatistics()
+    {
+        hits = 0;
+        misses = 0;
+        falseAlarms = 0;
+        correctRejections = 0;
+
+        targetTrials = 0;
+
+        totalReactionTime = 0;
+        reactionTimeCount = 0;
+
+        stimulusHistory.Clear();
+    }
+
+    private void StartExperiment()
+    {
+        currentPhase = TaskPhase.Experiment;
+
+        ResetStatistics();
+
+        taskRunning = true;
+        taskFinished = false;
+
+        feedbackText.text = "";
+        stimulusHistory.Clear();
+
+        StartCoroutine(TaskLoop());
+    }
+
+    private void StartTutorial()
+    {
+        currentPhase = TaskPhase.Tutorial;
+
+        ResetStatistics();
+
+        taskRunning = true;
+        taskFinished = false;
+        isPaused = false;
+
+        UpdateNBackTitleText();
+
+        if (feedbackText != null)
+        {
+            feedbackText.text = "";
+        }
+
+        taskCoroutine = StartCoroutine(TaskLoop());
+    }
+
+    private void SaveResultsToJson()
+    {
+        string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+
+        string sessionCondition = "";
+
+        if (SessionLogger.Instance != null)
+        {
+            sessionCondition = SessionLogger.Instance.sessionCondition;
+        }
+
+        NBackResults results = new NBackResults
+        {
+            nBackLevel = nBackLevel,
+            totalTrials = totalTrialCount,
+            targetTrials = targetTrials,
+
+            hits = hits,
+            misses = misses,
+            falseAlarms = falseAlarms,
+            correctRejections = correctRejections,
+
+            accuracy = (float)(hits + correctRejections) / totalTrialCount,
+
+            averageReactionTime =
+                reactionTimeCount > 0
+                    ? totalReactionTime / reactionTimeCount
+                    : 0f,
+
+            hitRate =
+                targetTrials > 0
+                    ? (float)hits / targetTrials
+                    : 0f,
+
+            falseAlarmRate =
+                (totalTrialCount - targetTrials) > 0
+                    ? (float)falseAlarms / (totalTrialCount - targetTrials)
+                    : 0f,
+
+            dPrime = ComputeDPrime(
+                targetTrials,
+                totalTrialCount - targetTrials,
+                hits,
+                falseAlarms
+            ),
+
+            sessionDuration =
+                GetTotalElapsedExcludingTeleport()
+        };
+
+        string json = JsonUtility.ToJson(results, true);
+
+        string fileName =
+            $"NBackResults_{timestamp}_{sessionCondition}.json";
+
+        string filePath =
+            Path.Combine(Application.persistentDataPath, fileName);
+
+        File.WriteAllText(filePath, json);
+
+        Debug.Log("[NBack] Results JSON saved to: " + filePath);
+    }
+}
+
+[Serializable]
+public class NBackResults
+{
+    public int nBackLevel;
+    public int totalTrials;
+    public int targetTrials;
+
+    public int hits;
+    public int misses;
+    public int falseAlarms;
+    public int correctRejections;
+
+    public float accuracy;
+    public float averageReactionTime;
+    public float hitRate;
+    public float falseAlarmRate;
+    public float dPrime;
+
+    public float sessionDuration;
 }

@@ -16,28 +16,28 @@ public class VRControllerInput : MonoBehaviour
     {
         bool confirmPressed =
             OVRInput.GetDown(confirmButton) ||
-            (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame);
+            (Keyboard.current != null &&
+             Keyboard.current.spaceKey.wasPressedThisFrame);
 
         bool cancelPressed =
             OVRInput.GetDown(cancelButton) ||
-            (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame);
+            (Keyboard.current != null &&
+             Keyboard.current.escapeKey.wasPressedThisFrame);
 
+
+        // A
         if (confirmPressed)
         {
-            Debug.Log("Confirm pressed");
-            onConfirmPressed.Invoke();
+            Debug.Log("[Input] A pressed");
+            onConfirmPressed?.Invoke();
         }
 
+
+        // B
         if (cancelPressed)
         {
-            Debug.Log("Cancel pressed (Tentative de passage aux résultats)");
-            onCancelPressed.Invoke();
-
-            // Le bouton Cancel sert exclusivement à quitter la fin du N-Back
-            if (NBackTaskController.Instance != null)
-            {
-                NBackTaskController.Instance.HandleResultSceneTransitionInput();
-            }
+            Debug.Log("[Input] B pressed");
+            onCancelPressed?.Invoke();
         }
     }
 }

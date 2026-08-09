@@ -264,6 +264,27 @@ public class NBackTaskController : MonoBehaviour
         Debug.Log("[NBack] Tutorial instructions displayed.");
     }
 
+    public void HandleTutorialRestartInput()
+    {
+        // B should only restart after the tutorial has finished
+        if (currentPhase != TaskPhase.TutorialFinished)
+            return;
+
+        Debug.Log("[NBack] Restarting tutorial.");
+
+        ResetStatistics();
+
+        currentTrialNumber = 0;
+
+        taskRunning = false;
+        taskFinished = false;
+        isPaused = false;
+
+        currentPhase = TaskPhase.Tutorial;
+
+        ShowTutorialInstructions();
+    }
+
     public void OnClickResume()
     {
         if (!isPaused) return;
@@ -293,11 +314,28 @@ public class NBackTaskController : MonoBehaviour
     // --- SYSTÈME DE PAUSE ---
     public void PauseTask()
     {
-        if (!hasTaskStarted || taskFinished || isPaused) return;
-        
+        // Pausing is ONLY allowed during the real experiment
+        if (currentPhase != TaskPhase.Experiment)
+        {
+            Debug.Log(
+                "[NBack] Pause ignored because current phase is: " +
+                currentPhase
+            );
+            return;
+        }
+
+        if (!hasTaskStarted ||
+            taskFinished ||
+            isPaused ||
+            !taskRunning)
+        {
+            return;
+        }
+
         isPaused = true;
         teleportPauseStart = Time.realtimeSinceStartup;
-        Debug.Log("Jeu mis en pause.");
+
+        Debug.Log("[NBack] Experiment paused.");
     }
     public void BeginTeleportPause()
     {
@@ -522,6 +560,9 @@ public class NBackTaskController : MonoBehaviour
 
     private void FinishTask()
     {
+        // =====================================================
+        // TUTORIAL FINISHED
+        // =====================================================
         if (currentPhase == TaskPhase.Tutorial)
         {
             taskRunning = false;
@@ -544,15 +585,122 @@ public class NBackTaskController : MonoBehaviour
 
                 tutorialText.text =
                     "TUTORIAL COMPLETE\n\n" +
-                    "You are now ready for the real experiment.\n\n" +
-                    "No feedback will be shown during the experiment.\n\n" +
-                    "Press A to begin.";
+                    "A - Begin experiment\n\n" +
+                    "B - Repeat tutorial";
             }
 
             UpdateNBackTitleText();
 
+            Debug.Log("[NBack] Tutorial finished.");
+
             return;
         }
+
+
+        // =====================================================
+        // REAL EXPERIMENT FINISHED
+        // =====================================================
+        if (currentPhase == TaskPhase.Experiment)
+        {
+            taskRunning = false;
+            taskFinished = true;
+
+            currentPhase = TaskPhase.Finished;
+
+            SaveResults();
+
+            if (stimulusText != null)
+                stimulusText.text = "";
+
+            if (trialCounterText != null)
+                trialCounterText.text = "";
+
+            if (feedbackText != null)
+                feedbackText.text = "";
+
+            if (tutorialText != null)
+            {
+                tutorialText.gameObject.SetActive(true);
+
+                tutorialText.text =
+                    "EXPERIMENT FINISHED\n\n" +
+                    "Press the Right Trigger\n" +
+                    "to view your results.";
+            }
+
+            UpdateNBackTitleText();
+
+            Debug.Log("[NBack] Experiment finished.");
+
+            return;
+        }
+    }
+
+    public void HandleCancelInput()
+    {
+        // =====================================================
+        // TUTORIAL
+        // B = restart tutorial
+        // =====================================================
+        if (currentPhase == TaskPhase.Tutorial ||
+            currentPhase == TaskPhase.TutorialFinished)
+        {
+            RestartTutorial();
+            return;
+        }
+
+        // =====================================================
+        // REAL EXPERIMENT
+        // B = pause
+        // =====================================================
+        if (currentPhase == TaskPhase.Experiment)
+        {
+            if (!isPaused && taskRunning)
+            {
+                PauseTask();
+            }
+
+            return;
+        }
+
+        // =====================================================
+        // EXPERIMENT FINISHED
+        // B does nothing.
+        // Right Trigger handles the Result Scene.
+        // =====================================================
+        if (currentPhase == TaskPhase.Finished || taskFinished)
+        {
+            Debug.Log(
+                "[NBack] Experiment already finished. " +
+                "Use Right Trigger to continue to results."
+            );
+
+            return;
+        }
+    }
+
+    private void RestartTutorial()
+    {
+        Debug.Log("[NBack] Restarting tutorial.");
+
+        // Stop current tutorial if it is still running
+        if (taskCoroutine != null)
+        {
+            StopCoroutine(taskCoroutine);
+            taskCoroutine = null;
+        }
+
+        taskRunning = false;
+        taskFinished = false;
+        isPaused = false;
+
+        currentTrialNumber = 0;
+
+        ResetStatistics();
+
+        currentPhase = TaskPhase.Tutorial;
+
+        ShowTutorialInstructions();
     }
 
     // À appeler depuis là où la gâchette est déjà lue. C'est la SEULE façon de

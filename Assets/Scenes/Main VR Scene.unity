@@ -4157,6 +4157,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1941933586}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1687799654 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1294638512246366757, guid: 73691e323cc86024b81f3a6c4ac71777, type: 3}
+  m_PrefabInstance: {fileID: 2859214192808851975}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16b074e298ac09c4ea3ed972cb4114ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NBackInputLinker
 --- !u!1 &1715364147
 GameObject:
   m_ObjectHideFlags: 0
@@ -5675,9 +5686,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 6674648602964966003}
     - target: {fileID: 9089821158804361460, guid: 3d6d87f8b6a22014cadd294ebbc5c5d9, type: 3}
+      propertyPath: totalTrialCount
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 9089821158804361460, guid: 3d6d87f8b6a22014cadd294ebbc5c5d9, type: 3}
       propertyPath: trialCounterText
       value: 
       objectReference: {fileID: 1834979449}
+    - target: {fileID: 9089821158804361460, guid: 3d6d87f8b6a22014cadd294ebbc5c5d9, type: 3}
+      propertyPath: tutorialTrialCount
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6132,6 +6151,66 @@ PrefabInstance:
     - target: {fileID: 3682349301036671243, guid: 73691e323cc86024b81f3a6c4ac71777, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6176637154743049846, guid: 73691e323cc86024b81f3a6c4ac71777, type: 3}
+      propertyPath: cancelButton
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6176637154743049846, guid: 73691e323cc86024b81f3a6c4ac71777, type: 3}
+      propertyPath: onCancelPressed.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6176637154743049846, guid: 73691e323cc86024b81f3a6c4ac71777, type: 3}
+      propertyPath: onConfirmPressed.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6176637154743049846, guid: 73691e323cc86024b81f3a6c4ac71777, type: 3}
+      propertyPath: onCancelPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6176637154743049846, guid: 73691e323cc86024b81f3a6c4ac71777, type: 3}
+      propertyPath: onConfirmPressed.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6176637154743049846, guid: 73691e323cc86024b81f3a6c4ac71777, type: 3}
+      propertyPath: onCancelPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1687799654}
+    - target: {fileID: 6176637154743049846, guid: 73691e323cc86024b81f3a6c4ac71777, type: 3}
+      propertyPath: onConfirmPressed.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1687799654}
+    - target: {fileID: 6176637154743049846, guid: 73691e323cc86024b81f3a6c4ac71777, type: 3}
+      propertyPath: onCancelPressed.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6176637154743049846, guid: 73691e323cc86024b81f3a6c4ac71777, type: 3}
+      propertyPath: onCancelPressed.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SendCancel
+      objectReference: {fileID: 0}
+    - target: {fileID: 6176637154743049846, guid: 73691e323cc86024b81f3a6c4ac71777, type: 3}
+      propertyPath: onConfirmPressed.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6176637154743049846, guid: 73691e323cc86024b81f3a6c4ac71777, type: 3}
+      propertyPath: onConfirmPressed.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: RestartTutorial
+      objectReference: {fileID: 0}
+    - target: {fileID: 6176637154743049846, guid: 73691e323cc86024b81f3a6c4ac71777, type: 3}
+      propertyPath: onCancelPressed.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: NBackInputLinker, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6176637154743049846, guid: 73691e323cc86024b81f3a6c4ac71777, type: 3}
+      propertyPath: onConfirmPressed.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: NBackInputLinker, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6176637154743049846, guid: 73691e323cc86024b81f3a6c4ac71777, type: 3}
+      propertyPath: onCancelPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 6176637154743049846, guid: 73691e323cc86024b81f3a6c4ac71777, type: 3}
+      propertyPath: onConfirmPressed.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

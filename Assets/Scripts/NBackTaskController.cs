@@ -288,6 +288,39 @@ public class NBackTaskController : MonoBehaviour
         ShowTutorialInstructions();
     }
 
+    public void ResetForNewExperiment()
+    {
+        Debug.Log("[NBack] Resetting controller for new experiment.");
+
+        // Stop old task coroutine if it still exists
+        if (taskCoroutine != null)
+        {
+            StopCoroutine(taskCoroutine);
+            taskCoroutine = null;
+        }
+
+        hasTaskStarted = false;
+        taskRunning = false;
+        taskFinished = false;
+        isPaused = false;
+
+        currentTrialNumber = 0;
+
+        ResetStatistics();
+
+        // Reset timing
+        sessionStartRealtime = Time.realtimeSinceStartup;
+        totalPausedDuration = 0f;
+
+        // Start from tutorial again if enabled
+        if (enableTutorial)
+            currentPhase = TaskPhase.Tutorial;
+        else
+            currentPhase = TaskPhase.Experiment;
+
+        Debug.Log("[NBack] Controller reset complete.");
+    }
+
     public void OnClickResume()
     {
         if (!isPaused) return;

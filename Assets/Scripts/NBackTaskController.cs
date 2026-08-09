@@ -35,6 +35,9 @@ public class NBackTaskController : MonoBehaviour
     [Header("Scene Transition")]
     [SerializeField] private string resultSceneName = "ResultScene";
 
+    [Header("Sounds")]
+    [SerializeField] private AudioSource roadAmbience;
+
     private readonly List<char> stimulusHistory = new List<char>();
 
     // Variables d'état pour les boutons et la pause
@@ -332,8 +335,22 @@ public class NBackTaskController : MonoBehaviour
             return;
         }
 
+        if (roadAmbience != null)
+            roadAmbience.Pause();
+
         isPaused = true;
         teleportPauseStart = Time.realtimeSinceStartup;
+
+        // Show resume window
+        var uiRefs = FindObjectOfType<NBackUIRefs>();
+
+        if (uiRefs != null && uiRefs.resumeButton != null)
+        {
+            uiRefs.resumeButton.SetActive(true);
+        }
+
+        // Pause music
+        MusicPlaylist.Instance?.PauseMusic();
 
         Debug.Log("[NBack] Experiment paused.");
     }
@@ -344,13 +361,22 @@ public class NBackTaskController : MonoBehaviour
 
     private void ResumeTask()
     {
-        isPaused = false;
-        float pauseDuration = Time.realtimeSinceStartup - teleportPauseStart;
+        float pauseDuration =
+            Time.realtimeSinceStartup - teleportPauseStart;
+
         totalPausedDuration += pauseDuration;
-        
-        // Ajuste le timer de la lettre en cours pour ne pas fausser le temps de réaction
-        currentStimulusStartTime += pauseDuration; 
-        
+
+        // Adjust reaction-time reference
+        currentStimulusStartTime += pauseDuration;
+
+        isPaused = false;
+
+        if (roadAmbience != null)
+            roadAmbience.UnPause();
+
+        // Continue music from exact same position
+        MusicPlaylist.Instance?.ResumeMusic();
+
         Debug.Log("Reprise du jeu.");
     }
 

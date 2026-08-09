@@ -950,7 +950,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 140dff60d9a6c6342be31dae0520e995, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.41
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -1729,7 +1729,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 444340453}
-  - component: {fileID: 444340452}
   - component: {fileID: 444340451}
   m_Layer: 0
   m_Name: SessionManager
@@ -1753,87 +1752,6 @@ MonoBehaviour:
   sessionCondition: Test2
   headTransform: {fileID: 1353064646}
   headLogFrequency: 10
---- !u!114 &444340452
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 444340450}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 53e2a1bcf55bdd6479e937fd951a87dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DistractionInputManager
-  distractions:
-  - key: 28
-    eventLabel: PhoneNotifications
-    onTrigger:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1085835197}
-          m_TargetAssemblyTypeName: NotificationManager, Assembly-CSharp
-          m_MethodName: TestNextNotification
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - key: 26
-    eventLabel: MailPopup
-    onTrigger:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 246415363}
-          m_TargetAssemblyTypeName: PopupTrigger, Assembly-CSharp
-          m_MethodName: ShowPopup
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - key: 30
-    eventLabel: PhoneRinging
-    onTrigger:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 254700281}
-          m_TargetAssemblyTypeName: OfficePhoneTrigger, Assembly-CSharp
-          m_MethodName: RingPhone
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - key: 22
-    eventLabel: CarHonk
-    onTrigger:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1991103445}
-          m_TargetAssemblyTypeName: CarHonk, Assembly-CSharp
-          m_MethodName: PlayHonk
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
 --- !u!4 &444340453
 Transform:
   m_ObjectHideFlags: 0
@@ -3086,6 +3004,119 @@ RectTransform:
   m_AnchoredPosition: {x: -0.301, y: 0.5191}
   m_SizeDelta: {x: 142.3616, y: 23.7588}
   m_Pivot: {x: 0.6009023, y: 0.2724851}
+--- !u!1 &1192506099
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1192506101}
+  - component: {fileID: 1192506100}
+  m_Layer: 0
+  m_Name: DistractionInputManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1192506100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1192506099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53e2a1bcf55bdd6479e937fd951a87dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DistractionInputManager
+  distractions:
+  - key: 41
+    eventLabel: PhoneNotifications
+    onTrigger:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1085835197}
+          m_TargetAssemblyTypeName: NotificationManager, Assembly-CSharp
+          m_MethodName: TestNextNotification
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - key: 42
+    eventLabel: MailPopup
+    onTrigger:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 246415363}
+          m_TargetAssemblyTypeName: PopupTrigger, Assembly-CSharp
+          m_MethodName: ShowPopup
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - key: 43
+    eventLabel: PhoneRinging
+    onTrigger:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 254700281}
+          m_TargetAssemblyTypeName: OfficePhoneTrigger, Assembly-CSharp
+          m_MethodName: RingPhone
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - key: 44
+    eventLabel: CarHonk
+    onTrigger:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1991103445}
+          m_TargetAssemblyTypeName: CarHonk, Assembly-CSharp
+          m_MethodName: PlayHonk
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+--- !u!4 &1192506101
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1192506099}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.37162, y: -0, z: 4.4951}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1230938439 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 9576c5701b9355f48863af294eb28189, type: 3}
@@ -4096,7 +4127,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1673206369
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5674,6 +5705,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 384295222}
     - target: {fileID: 9089821158804361460, guid: 3d6d87f8b6a22014cadd294ebbc5c5d9, type: 3}
+      propertyPath: roadAmbience
+      value: 
+      objectReference: {fileID: 1318190071}
+    - target: {fileID: 9089821158804361460, guid: 3d6d87f8b6a22014cadd294ebbc5c5d9, type: 3}
       propertyPath: stimulusText
       value: 
       objectReference: {fileID: 504921379}
@@ -5687,7 +5722,7 @@ PrefabInstance:
       objectReference: {fileID: 6674648602964966003}
     - target: {fileID: 9089821158804361460, guid: 3d6d87f8b6a22014cadd294ebbc5c5d9, type: 3}
       propertyPath: totalTrialCount
-      value: 5
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 9089821158804361460, guid: 3d6d87f8b6a22014cadd294ebbc5c5d9, type: 3}
       propertyPath: trialCounterText
@@ -5695,7 +5730,7 @@ PrefabInstance:
       objectReference: {fileID: 1834979449}
     - target: {fileID: 9089821158804361460, guid: 3d6d87f8b6a22014cadd294ebbc5c5d9, type: 3}
       propertyPath: tutorialTrialCount
-      value: 5
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7027,6 +7062,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3375323627128007708, guid: b779909e678025b4290a215fc93d8336, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3877520394766042874, guid: b779909e678025b4290a215fc93d8336, type: 3}
       propertyPath: m_LocalScale.x
       value: 2
@@ -7827,3 +7866,4 @@ SceneRoots:
   - {fileID: 1673206370}
   - {fileID: 2859214192808851975}
   - {fileID: 444340453}
+  - {fileID: 1192506101}

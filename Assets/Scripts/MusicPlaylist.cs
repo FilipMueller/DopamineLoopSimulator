@@ -4,14 +4,26 @@ using UnityEngine;
 [RequireComponent(typeof(AudioSource))]
 public class MusicPlaylist : MonoBehaviour
 {
+    public static MusicPlaylist Instance { get; private set; }
     [SerializeField] private AudioClip[] songs;
     [SerializeField] private bool shuffle = false;
 
     private AudioSource audioSource;
     private int currentSongIndex = 0;
 
+    private bool isPaused = false;
+
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
         audioSource = GetComponent<AudioSource>();
     }
 
@@ -33,7 +45,12 @@ public class MusicPlaylist : MonoBehaviour
         {
             PlayCurrentSong();
 
-            yield return new WaitWhile(() => audioSource.isPlaying);
+            // Wait until the song actually finishes.
+            // If we manually pause it, stay here.
+            while (audioSource.isPlaying || isPaused)
+            {
+                yield return null;
+            }
 
             GoToNextSong();
         }
@@ -61,6 +78,30 @@ public class MusicPlaylist : MonoBehaviour
             {
                 currentSongIndex = 0;
             }
+        }
+    }
+
+    public void PauseMusic()
+    {
+        if (audioSource == null)
+            return;
+
+        if (audioSource.isPlaying)
+        {
+            isPaused = true;
+            audioSource.Pause();
+        }
+    }
+
+    public void ResumeMusic()
+    {
+        if (audioSource == null)
+            return;
+
+        if (isPaused)
+        {
+            audioSource.UnPause();
+            isPaused = false;
         }
     }
 }

@@ -15,6 +15,7 @@ public class NBackTaskController : MonoBehaviour
     [SerializeField] private TMP_Text feedbackText;
     [SerializeField] private TMP_Text trialCounterText;
     [SerializeField] private TMP_Text nBackTitleText;
+    [SerializeField] private TMP_Text tutorialText;
 
     [Header("N-Back Settings")]
     [SerializeField] private int nBackLevel = 2;
@@ -90,43 +91,114 @@ public class NBackTaskController : MonoBehaviour
 
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        FindAndAssignUI();
+
         var uiRefs = FindObjectOfType<NBackUIRefs>();
-        if (uiRefs != null)
+
+        if (uiRefs == null)
+            return;
+
+        if (uiRefs.startButton != null)
         {
-            // 1. On connecte les textes du nouveau Canvas
-            stimulusText = uiRefs.stimulusText;
-            feedbackText = uiRefs.feedbackText;
-            trialCounterText = uiRefs.trialCounterText;
-
-            // 2. On affiche le bon bouton
-            if (uiRefs.startButton != null)
-                uiRefs.startButton.SetActive(!hasTaskStarted && !taskFinished);
-            
-            if (uiRefs.resumeButton != null)
-                uiRefs.resumeButton.SetActive(hasTaskStarted && isPaused && !taskFinished);
-
-            // --- 3. LA CORRECTION EST ICI : On rafraîchit immédiatement le visuel ---
-            if (hasTaskStarted)
-            {
-                UpdateTrialCounterText(); // Met le bon numéro d'essai (ex: Trial 15/60)
-                
-                if (feedbackText != null) 
-                    feedbackText.text = ""; // Efface les vieux messages de feedback
-
-                if (stimulusText != null)
-                {
-                    // Si on a déjà des lettres en mémoire, on remet la dernière à l'écran
-                    if (stimulusHistory.Count > 0)
-                    {
-                        stimulusText.text = stimulusHistory[stimulusHistory.Count - 1].ToString();
-                    }
-                    else
-                    {
-                        stimulusText.text = "";
-                    }
-                }
-            }
+            uiRefs.startButton.SetActive(
+                !hasTaskStarted && !taskFinished
+            );
         }
+
+        if (uiRefs.resumeButton != null)
+        {
+            uiRefs.resumeButton.SetActive(
+                hasTaskStarted &&
+                isPaused &&
+                !taskFinished
+            );
+        }
+
+        RestoreUIForCurrentPhase();
+    }
+
+    private void RestoreUIForCurrentPhase()
+    {
+        UpdateNBackTitleText();
+
+        if (!hasTaskStarted)
+        {
+            if (tutorialText != null)
+            {
+                tutorialText.text = "";
+                tutorialText.gameObject.SetActive(false);
+            }
+
+            return;
+        }
+
+        if (currentPhase == TaskPhase.Tutorial && !taskRunning)
+        {
+            ShowTutorialInstructions();
+            return;
+        }
+
+        if (currentPhase == TaskPhase.TutorialFinished)
+        {
+            if (stimulusText != null)
+                stimulusText.text = "";
+
+            if (trialCounterText != null)
+                trialCounterText.text = "";
+
+            if (feedbackText != null)
+                feedbackText.text = "";
+
+            if (tutorialText != null)
+            {
+                tutorialText.gameObject.SetActive(true);
+
+                tutorialText.text =
+                    "TUTORIAL COMPLETE\n\n" +
+                    "You are now ready for the real experiment.\n\n" +
+                    "No feedback will be shown during the experiment.\n\n" +
+                    "Press A to begin.";
+            }
+
+            return;
+        }
+
+        // Running tutorial/experiment
+        if (tutorialText != null)
+        {
+            tutorialText.text = "";
+            tutorialText.gameObject.SetActive(false);
+        }
+
+        if (taskRunning)
+        {
+            UpdateTrialCounterText();
+        }
+    }
+
+    private void FindAndAssignUI()
+    {
+        var uiRefs = FindObjectOfType<NBackUIRefs>();
+
+        if (uiRefs == null)
+        {
+            Debug.LogWarning("[NBack] No NBackUIRefs found in current scene.");
+            return;
+        }
+
+        stimulusText = uiRefs.stimulusText;
+        feedbackText = uiRefs.feedbackText;
+        trialCounterText = uiRefs.trialCounterText;
+        nBackTitleText = uiRefs.nBackTitleText;
+        tutorialText = uiRefs.tutorialText;
+
+        Debug.Log(
+            "[NBack] UI connected. " +
+            "Title=" + (nBackTitleText != null) +
+            ", Tutorial=" + (tutorialText != null)
+        );
+
+        UpdateNBackTitleText();
     }
 
     // --- GESTION DES BOUTONS DE L'UI ---
@@ -149,8 +221,7 @@ public class NBackTaskController : MonoBehaviour
         else
         {
             currentPhase = TaskPhase.Experiment;
-
-            StartTask();
+            StartExperiment();
         }
     }
 
@@ -158,28 +229,39 @@ public class NBackTaskController : MonoBehaviour
     {
         taskRunning = false;
         taskFinished = false;
+        isPaused = false;
+
+        UpdateNBackTitleText();
 
         if (stimulusText != null)
-        {
             stimulusText.text = "";
-        }
 
         if (trialCounterText != null)
-        {
             trialCounterText.text = "";
-        }
 
         if (feedbackText != null)
+            feedbackText.text = "";
+
+        if (tutorialText == null)
         {
-            feedbackText.text =
-                "Tutorial\n\n" +
-                "Press A when the current letter matches\n" +
-                "the letter shown " + nBackLevel + " positions ago.\n\n" +
-                "You will receive feedback during the tutorial.\n\n" +
-                "Press A to start.";
+            Debug.LogError(
+                "[NBack] Cannot show tutorial: tutorialText is NULL. " +
+                "Check NBackUIRefs in the Inspector."
+            );
+
+            return;
         }
 
-        Debug.Log("Tutorial instructions displayed.");
+        tutorialText.gameObject.SetActive(true);
+
+        tutorialText.text =
+            "TUTORIAL\n\n" +
+            "Press A when the current letter matches\n" +
+            "the letter shown " + nBackLevel + " positions ago.\n\n" +
+            "You will receive feedback during the tutorial.\n\n" +
+            "Press A to begin.";
+
+        Debug.Log("[NBack] Tutorial instructions displayed.");
     }
 
     public void OnClickResume()
@@ -236,10 +318,21 @@ public class NBackTaskController : MonoBehaviour
 
     private void UpdateNBackTitleText()
     {
-        if (nBackTitleText != null)
+        if (nBackTitleText == null)
         {
-            nBackTitleText.text = nBackLevel + "-Back Test";
+            Debug.LogError(
+                "[NBack] Cannot update title: nBackTitleText is NULL."
+            );
+
+            return;
         }
+
+        nBackTitleText.text = nBackLevel + "-Back Test";
+
+        Debug.Log(
+            "[NBack] Title updated to: " +
+            nBackTitleText.text
+        );
     }
 
     public float GetTotalElapsedExcludingTeleport()
@@ -436,37 +529,30 @@ public class NBackTaskController : MonoBehaviour
 
             currentPhase = TaskPhase.TutorialFinished;
 
-            stimulusText.text = "";
+            if (stimulusText != null)
+                stimulusText.text = "";
+
+            if (trialCounterText != null)
+                trialCounterText.text = "";
 
             if (feedbackText != null)
+                feedbackText.text = "";
+
+            if (tutorialText != null)
             {
-                feedbackText.text =
-                    "Tutorial complete!\n\nPress A to begin the experiment.";
+                tutorialText.gameObject.SetActive(true);
+
+                tutorialText.text =
+                    "TUTORIAL COMPLETE\n\n" +
+                    "You are now ready for the real experiment.\n\n" +
+                    "No feedback will be shown during the experiment.\n\n" +
+                    "Press A to begin.";
             }
+
+            UpdateNBackTitleText();
 
             return;
         }
-
-        // ===== Experiment finished =====
-
-        taskRunning = false;
-        taskFinished = true;
-
-        SaveResults();
-
-        if (stimulusText != null)
-        {
-            stimulusText.text = "Finished";
-        }
-
-        if (feedbackText != null)
-        {
-            feedbackText.text = "Task complete";
-        }
-
-        Debug.Log("N-back task finished.");
-
-        // Wait for trigger to transition to result scene
     }
 
     // À appeler depuis là où la gâchette est déjà lue. C'est la SEULE façon de
@@ -667,11 +753,20 @@ public class NBackTaskController : MonoBehaviour
 
         taskRunning = true;
         taskFinished = false;
+        isPaused = false;
 
-        feedbackText.text = "";
-        stimulusHistory.Clear();
+        UpdateNBackTitleText();
 
-        StartCoroutine(TaskLoop());
+        if (tutorialText != null)
+        {
+            tutorialText.text = "";
+            tutorialText.gameObject.SetActive(false);
+        }
+
+        if (feedbackText != null)
+            feedbackText.text = "";
+
+        taskCoroutine = StartCoroutine(TaskLoop());
     }
 
     private void StartTutorial()
@@ -686,10 +781,14 @@ public class NBackTaskController : MonoBehaviour
 
         UpdateNBackTitleText();
 
-        if (feedbackText != null)
+        if (tutorialText != null)
         {
-            feedbackText.text = "";
+            tutorialText.text = "";
+            tutorialText.gameObject.SetActive(false);
         }
+
+        if (feedbackText != null)
+            feedbackText.text = "";
 
         taskCoroutine = StartCoroutine(TaskLoop());
     }
@@ -755,6 +854,11 @@ public class NBackTaskController : MonoBehaviour
         File.WriteAllText(filePath, json);
 
         Debug.Log("[NBack] Results JSON saved to: " + filePath);
+    }
+
+    private void Start()
+    {
+        FindAndAssignUI();
     }
 }
 

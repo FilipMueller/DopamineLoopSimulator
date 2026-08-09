@@ -24,6 +24,7 @@ public class SessionLogger : MonoBehaviour
     private StreamWriter writer;
     private DateTime sessionStartTime;
     private string filePath;
+    public string FilePath => filePath;
 
     private bool trackHead = false;
     private float nextHeadLogTime = 0f;

@@ -734,11 +734,84 @@ public class NBackTaskController : MonoBehaviour
     // terminée, pour éviter de sauter vers des résultats qui n'existent pas encore.
     public void HandleResultSceneTransitionInput()
     {
-        if (!taskFinished) return;
-        if (DistractionInputManager.Instance != null)
+        if (!taskFinished)
+            return;
+
+        string currentScene = SceneManager.GetActiveScene().name;
+
+        Debug.Log("[NBack] Leaving experiment scene: " + currentScene);
+
+        // Create the N-back result JSON directly from the current values.
+        string scoreJson = CreateResultsJson();
+
+
+        // =====================================================
+        // FOCUS SCENE = NO DISTRACTIONS
+        // =====================================================
+
+        if (currentScene == "FocusScene")
         {
-            DistractionInputManager.Instance.LogResultsTransitionAndStopLogging();
+            Debug.Log("[NBack] Sending distractionless score.");
+
+            if (GameSessionAPI.Instance != null)
+            {
+                GameSessionAPI.Instance.SendScore(
+                    scoreJson,
+                    false
+                );
+            }
+            else
+            {
+                Debug.LogError("[NBack] GameSessionAPI.Instance is null!");
+            }
         }
+
+
+        // =====================================================
+        // MAIN VR SCENE = DISTRACTIONS
+        // =====================================================
+
+        else if (currentScene == "Main VR Scene")
+        {
+            Debug.Log("[NBack] Sending distraction score.");
+
+            if (GameSessionAPI.Instance != null)
+            {
+                // Send N-back JSON
+                GameSessionAPI.Instance.SendScore(
+                    scoreJson,
+                    true
+                );
+            }
+
+            // Stop the distraction/session logger first.
+            if (DistractionInputManager.Instance != null)
+            {
+                DistractionInputManager.Instance
+                    .LogResultsTransitionAndStopLogging();
+            }
+
+            // Upload the CSV file.
+            if (GameSessionAPI.Instance != null &&
+                SessionLogger.Instance != null)
+            {
+                string csvPath =
+                    SessionLogger.Instance.FilePath;
+
+                Debug.Log(
+                    "[NBack] Uploading distraction CSV: " +
+                    csvPath
+                );
+
+                GameSessionAPI.Instance
+                    .UploadDistractionFile(csvPath);
+            }
+        }
+
+
+        // =====================================================
+        // NOW GO TO RESULTS
+        // =====================================================
 
         SceneManager.LoadScene(resultSceneName);
     }
@@ -937,8 +1010,9 @@ public class NBackTaskController : MonoBehaviour
             tutorialText.gameObject.SetActive(false);
         }
 
-        if (feedbackText != null)
+        if (feedbackText != null) {
             feedbackText.text = "";
+        }
 
         taskCoroutine = StartCoroutine(TaskLoop());
     }
@@ -1028,6 +1102,56 @@ public class NBackTaskController : MonoBehaviour
         File.WriteAllText(filePath, json);
 
         Debug.Log("[NBack] Results JSON saved to: " + filePath);
+    }
+
+    private string CreateResultsJson()
+    {
+        NBackResults results = new NBackResults
+        {
+            nBackLevel = nBackLevel,
+            totalTrials = totalTrialCount,
+            targetTrials = targetTrials,
+
+            hits = hits,
+            misses = misses,
+            falseAlarms = falseAlarms,
+            correctRejections = correctRejections,
+
+            accuracy =
+                totalTrialCount > 0
+                    ? (float)(hits + correctRejections)
+                      / totalTrialCount
+                    : 0f,
+
+            averageReactionTime =
+                reactionTimeCount > 0
+                    ? totalReactionTime / reactionTimeCount
+                    : 0f,
+
+            hitRate =
+                targetTrials > 0
+                    ? (float)hits / targetTrials
+                    : 0f,
+
+            falseAlarmRate =
+                (totalTrialCount - targetTrials) > 0
+                    ? (float)falseAlarms /
+                      (totalTrialCount - targetTrials)
+                    : 0f,
+
+            dPrime =
+                ComputeDPrime(
+                    targetTrials,
+                    totalTrialCount - targetTrials,
+                    hits,
+                    falseAlarms
+                ),
+
+            sessionDuration =
+                GetTotalElapsedExcludingTeleport()
+        };
+
+        return JsonUtility.ToJson(results, true);
     }
 
     private void Start()

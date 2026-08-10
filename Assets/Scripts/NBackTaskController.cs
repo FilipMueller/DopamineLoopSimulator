@@ -774,28 +774,21 @@ public class NBackTaskController : MonoBehaviour
 
         Debug.Log("[NBack] Leaving experiment scene: " + currentScene);
 
-        // Create the N-back result JSON directly from the current values.
-        string scoreJson = CreateResultsJson();
-
-
         // =====================================================
         // FOCUS SCENE = NO DISTRACTIONS
         // =====================================================
 
         if (currentScene == "FocusScene")
         {
-            Debug.Log("[NBack] Sending distractionless score.");
-
+            // API is optional
             if (GameSessionAPI.Instance != null)
             {
+                string scoreJson = CreateResultsJson();
+
                 GameSessionAPI.Instance.SendScore(
                     scoreJson,
                     false
                 );
-            }
-            else
-            {
-                Debug.LogError("[NBack] GameSessionAPI.Instance is null!");
             }
         }
 
@@ -806,35 +799,30 @@ public class NBackTaskController : MonoBehaviour
 
         else if (currentScene == "Main VR Scene")
         {
-            Debug.Log("[NBack] Sending distraction score.");
-
+            // Send score only if API is enabled
             if (GameSessionAPI.Instance != null)
             {
-                // Send N-back JSON
+                string scoreJson = CreateResultsJson();
+
                 GameSessionAPI.Instance.SendScore(
                     scoreJson,
                     true
                 );
             }
 
-            // Stop the distraction/session logger first.
+            // Still stop the logger even if API is disabled
             if (DistractionInputManager.Instance != null)
             {
                 DistractionInputManager.Instance
                     .LogResultsTransitionAndStopLogging();
             }
 
-            // Upload the CSV file.
+            // Upload CSV only if API exists
             if (GameSessionAPI.Instance != null &&
                 SessionLogger.Instance != null)
             {
                 string csvPath =
                     SessionLogger.Instance.FilePath;
-
-                Debug.Log(
-                    "[NBack] Uploading distraction CSV: " +
-                    csvPath
-                );
 
                 GameSessionAPI.Instance
                     .UploadDistractionFile(csvPath);
@@ -843,7 +831,7 @@ public class NBackTaskController : MonoBehaviour
 
 
         // =====================================================
-        // NOW GO TO RESULTS
+        // ALWAYS GO TO RESULT SCENE
         // =====================================================
 
         SceneManager.LoadScene(resultSceneName);

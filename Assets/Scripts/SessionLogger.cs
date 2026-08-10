@@ -80,7 +80,7 @@ public class SessionLogger : MonoBehaviour
         LogEvent("SessionStart", sessionCondition);
 
         Debug.Log("[SessionLogger] Logging to: " + filePath);
-        StartHeadTracking();
+        //StartHeadTracking();
     }
 
     /// <summary>
